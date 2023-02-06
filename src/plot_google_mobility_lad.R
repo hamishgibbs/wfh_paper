@@ -17,3 +17,15 @@ goog_mob_density <- subset(goog_mob_smooth, variable %in% subset_variables) %>%
   group_by(date, variable) %>% 
   summarize_at(vars(value), p_funs) %>% 
   ungroup()
+
+goog_mob_density$variable <- paste(goog_mob_density$variable, "(Google)")
+
+mob_density %>% 
+  ggplot() + 
+  geom_vline(aes(xintercept=as.Date("2021-03-21")), color="blue", linetype="dashed") + 
+  geom_ribbon(aes(x = date, ymin = lower_80, ymax = upper_80, fill = variable), alpha = ALPHA) + 
+  geom_ribbon(aes(x = date, ymin = lower_50, ymax = upper_50, fill = variable), alpha = ALPHA) + 
+  geom_ribbon(aes(x = date, ymin = lower_20, ymax = upper_20, fill = variable), alpha = ALPHA) + 
+  geom_path(aes(x = date, y = median, color = variable)) + 
+  theme_classic() + 
+  facet_wrap(~variable, ncol=1)

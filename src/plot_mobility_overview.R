@@ -10,7 +10,6 @@ if (interactive()) {
   .args <- c(
     "data/mobility/clean/google_mobility_national.csv",
     "data/mobility/clean/apple_mobility.csv",
-    "data/mobility/clean/waze_mobility.csv",
     "output/mobility_overview_national.png"
   )
 } else {
@@ -30,12 +29,13 @@ smooth_mobility <- function(x, K=30){
 goog_mob_smooth <- smooth_mobility(goog_mob)
 apple_mob_smooth <- smooth_mobility(apple_mob)
 
-ggplot(data = rbind(goog_mob_smooth, apple_mob_smooth)) + 
+p <- ggplot(data = rbind(goog_mob_smooth, apple_mob_smooth)) + 
   geom_path(aes(x = date, y = value, color=variable)) + 
-  geom_vline(xintercept = as.Date("2021-03-21"), color="blue", linetype="dashed", linewidth=0.3) + 
+  geom_vline(xintercept = as.Date("2021-03-21"), color="blue", linetype="dashed", size=0.3) + 
   theme_classic()
 
-# need a provider-specific color scheme
-# need nice names for variables
-# Need a horizontal line at 0
-# need annotation of interventions
+ggsave(tail(.args, 1), 
+       p, 
+       width=10, 
+       height = 6, 
+       units = "in")

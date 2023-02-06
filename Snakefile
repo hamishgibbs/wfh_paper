@@ -20,15 +20,6 @@ rule dag:
     shell:
         "snakemake --dag > {output}"
 
-rule clean_waze: 
-    input:
-        "src/clean_waze_mobility.R",
-        "data/mobility/Waze_Country-Level_Data.csv"
-    output:
-        "data/mobility/clean/waze_mobility.csv"
-    shell:
-        "Rscript {input} {output}"
-
 rule clean_apple: 
     input:
         "src/clean_apple_mobility.R",
@@ -64,7 +55,6 @@ rule plot_mobility_national:
         "src/plot_mobility_overview.R",
         "data/mobility/clean/google_mobility_national.csv",
         "data/mobility/clean/apple_mobility.csv",
-        "data/mobility/clean/waze_mobility.csv",
     output:
         "output/mobility_overview_national.png"
     shell:
