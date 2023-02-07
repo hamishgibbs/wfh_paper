@@ -4,8 +4,8 @@ suppressPackageStartupMessages({
 
 if (interactive()) {
   .args <- c(
-    "data/Global_Mobility_Report.csv",
-    "data/google_mobility_lad_lookup_200903.csv",
+    "data/mobility/Global_Mobility_Report.csv",
+    "data/mobility/google_mobility_lad_lookup_200903.csv",
     ""
   )
 } else {
@@ -35,7 +35,11 @@ google <- google[!is.na(la_name)]
 google <- melt(google, id.vars = c("la_name", "lad19cd", "date"),
     measure.vars = colnames(google)[grep("_percent_change_from_baseline", colnames(google))])
 
-google$variable <- gsub("_percent_change_from_baseline", "", google$variable)
+google <- google[substr(google$lad19cd, 1, 1) == "E"]
+
+google[, variable := gsub("_percent_change_from_baseline", "", variable)]
+google[, variable := stringr::str_to_title(gsub("_", " ", variable))]
+google[, variable := gsub("And", "and", variable)]
 
 fwrite(google, tail(.args, 1))
 
