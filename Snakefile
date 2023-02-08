@@ -10,9 +10,8 @@ rule all:
         "output/mobility_overview_national.png",
         "output/mobility_overview_lad.png",
         "output/wfh_distribution_log.png",
-        "output/cor_plot.png",
-        "output/cor_matrix.csv",
-        "output/coefficient_values.png"
+        "output/model_fit_summary.csv",
+        "output/regression_forward_projection_focus_lads.png"        
 
 rule rulegraph:
     output: "metadata/rulegraph/rulegraph_{TIMESTAMP}.dot"
@@ -95,11 +94,24 @@ rule prep_regression_data:
 rule regression: 
   input: 
       "src/regression.R",
-      "src/linear_regression.stan",
       "data/regression/regression_data.csv"
   output:
       "output/cor_plot.png",
       "output/cor_matrix.csv",
-      "output/coefficient_values.png"
+      "output/regression_predictions.png",
+      "output/coefficient_values.png",
+      "data/regression/models.rds",
+      "output/model_fit_summary.csv"
+  shell:
+      "Rscript {input} {output}"
+
+rule regression_forward_projection: 
+  input: 
+      "src/forward_projection.R",
+      "data/mobility/clean/google_mobility_lad.csv",
+      "data/regression/models.rds"
+  output:
+      "output/google_mobility_focus_lads.png",
+      "output/regression_forward_projection_focus_lads.png"
   shell:
       "Rscript {input} {output}"

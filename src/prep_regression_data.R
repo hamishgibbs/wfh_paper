@@ -46,9 +46,9 @@ regression_data <- google_wday_census[, .(value = mean(value, na.rm=T)), by = c(
 
 regression_data[wfh, on=c("lad19cd" = "LAD21CD"), propWFH21 := propWFH21]
 
-#regression_data[, variable := gsub(" ", "_", stringr::str_to_lower(variable))]
-
 regression_data[regression_data$variable == "Residential", "value"] <- -1 * regression_data[regression_data$variable == "Residential", "value"]
 regression_data$value <- -1 * regression_data$value
+
+regression_data[regression_data$variable != "Residential", "variable"] <- paste0(regression_data[regression_data$variable != "Residential"]$variable, " (Inverse)")
 
 fwrite(regression_data, tail(.args, 1))
