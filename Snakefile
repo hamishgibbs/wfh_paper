@@ -9,7 +9,6 @@ rule all:
         f"metadata/dag/dag_{TIMESTAMP}.dot",
         "output/mobility_overview_national.png",
         "output/mobility_overview_lad.png",
-        "output/wfh_distribution_log.png",
         "output/model_fit_summary.csv",
         "output/regression_forward_projection_focus_lads.png"        
 
@@ -70,15 +69,6 @@ rule plot_mobility_national:
         "output/mobility_overview_national.png"
     shell:
         "Rscript {input} {output}"
-        
-rule plot_wfh_exploratory: 
-  input: 
-      "src/wfh_exploratory.R",
-      "data/census/Census-WFH.csv"
-  output:
-      "output/wfh_distribution_log.png"
-  shell:
-      "Rscript {input} {output}"
     
 rule prep_regression_data: 
   input: 
