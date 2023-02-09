@@ -10,7 +10,7 @@ rule all:
         "output/mobility_overview_national.png",
         "output/mobility_overview_lad.png",
         "output/model_fit_summary.csv",
-        "output/regression_forward_projection_focus_lads.png"        
+        "data/forward_projection/forward_projection_google_mobility_lad.csv"
 
 rule rulegraph:
     output: "metadata/rulegraph/rulegraph_{TIMESTAMP}.dot"
@@ -44,7 +44,8 @@ rule clean_google_lad:
     input:
         "src/clean_google_mobility_lad.R",
         "data/mobility/Global_Mobility_Report.csv",
-        "data/mobility/google_mobility_lad_lookup_200903.csv"
+        "data/mobility/google_mobility_lad_lookup_200903.csv",
+        "data/geo/lad19_to_lad_21_lookup.csv"
     output:
         "data/mobility/clean/google_mobility_lad.csv"
     shell:
@@ -74,7 +75,8 @@ rule prep_regression_data:
   input: 
       "src/prep_regression_data.R",
       "data/mobility/clean/google_mobility_lad.csv",
-      "data/census/Census-WFH.csv"
+      "data/census/Census-WFH.csv",
+      "data/geo/lad19_to_lad_21_lookup.csv"
   output:
       "data/regression/regression_data.csv"
   shell:
@@ -95,6 +97,17 @@ rule regression:
   shell:
       "Rscript {input} {output}"
 
+rule prep_regression_forward_projection: 
+    input: 
+      "src/prep_forward_projection_data.R",
+      "data/mobility/clean/google_mobility_lad.csv",
+      "data/regression/models.rds"
+    output:
+      "output/mobility_census_date_comparison.csv",
+      "data/forward_projection/forward_projection_google_mobility_lad.csv"
+    shell:
+      "Rscript {input} {output}"
+
 rule regression_forward_projection: 
   input: 
       "src/forward_projection.R",
@@ -105,3 +118,4 @@ rule regression_forward_projection:
       "output/regression_forward_projection_focus_lads.png"
   shell:
       "Rscript {input} {output}"
+

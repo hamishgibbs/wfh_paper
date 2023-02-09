@@ -6,6 +6,7 @@ if (interactive()) {
   .args <- c(
     "data/mobility/clean/google_mobility_lad.csv",
     "data/census/Census-WFH.csv",
+    "data/geo/lad19_to_lad_21_lookup.csv",
     "data/regression/regression_data.csv"
   )
 } else {
@@ -14,20 +15,15 @@ if (interactive()) {
 
 google <- fread(.args[1])
 wfh <- fread(.args[2])
+lad19_to_lad21 <- fread(.args[3])
 census_date <- as.Date("2021-03-21")
 
 wfh <- wfh[, c("LAD21CD", "LAD21NM", "TotPop21", "WFH21", "propWFH21")]
+wfh <- wfh[substr(wfh$LAD21CD, 1, 1) == "E"]
+wfh <- unique(wfh)
 
-# Check whether the LAD19 and LAD21 codes line up 
-
-#setdiff(google$lad19cd, wfh$LAD21CD)
-#setdiff(wfh$LAD21CD, google$lad19cd)
-
-# For now - select only LADs present in both - come back to address these mis-matches later
-ladcd <- union(google$lad19cd, wfh$LAD21CD)
-
-google <- subset(google, lad19cd %in% ladcd)
-wfh <- subset(wfh, LAD21CD %in% ladcd)
+# Drop WFH districts with no corresponding google mobility data (because of district changes)
+wfh <- subset(wfh, !LAD21CD %in% lad19_to_lad21$wfh_LAD21CD)
 
 # Take average weekday mobility over the previous 4 weeks from the census date
 # 7 = Saturday, 1 = Sunday
