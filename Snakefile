@@ -22,15 +22,6 @@ rule dag:
     shell:
         "snakemake --dag > {output}"
 
-rule clean_apple: 
-    input:
-        "src/clean_apple_mobility.R",
-        "data/mobility/apple_mobility_report.csv"
-    output:
-        "data/mobility/clean/apple_mobility.csv"
-    shell:
-        "Rscript {input} {output}"
-
 rule clean_google_national: 
     input:
         "src/clean_google_mobility_national.R",
@@ -64,7 +55,6 @@ rule plot_mobility_national:
     input:
         "src/plot_mobility_overview.R",
         "data/mobility/clean/google_mobility_national.csv",
-        "data/mobility/clean/apple_mobility.csv",
         "data/interventions/key_interventions.csv"
     output:
         "output/mobility_overview_national.png"

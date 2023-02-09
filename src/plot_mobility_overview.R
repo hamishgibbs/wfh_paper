@@ -10,7 +10,6 @@ suppressPackageStartupMessages({
 if (interactive()) {
   .args <- c(
     "data/mobility/clean/google_mobility_national.csv",
-    "data/mobility/clean/apple_mobility.csv",
     "data/interventions/key_interventions.csv",
     "output/mobility_overview_national.png"
   )
@@ -19,8 +18,7 @@ if (interactive()) {
 }
 
 goog_mob <- fread(.args[1])
-apple_mob <- fread(.args[2])
-interventions <- fread(.args[3])
+interventions <- fread(.args[2])
 
 smooth_mobility <- function(x, K=30){
   x %>% 
@@ -29,12 +27,8 @@ smooth_mobility <- function(x, K=30){
 }
 
 goog_mob_smooth <- smooth_mobility(goog_mob)
-apple_mob_smooth <- smooth_mobility(apple_mob)
 
 category_levels <- c(
-  "Driving (Apple)",
-  "Transit (Apple)",
-  "Walking (Apple)",
   "Residential (Google)", 
   "Workplaces (Google)", 
   "Retail and Recreation (Google)", 
@@ -43,9 +37,9 @@ category_levels <- c(
   "Parks (Google)"
 )
 
-mob_smooth <- data.table(rbind(goog_mob_smooth, apple_mob_smooth))
+mob_smooth <- data.table(goog_mob_smooth)
 
-mob_smooth[, variable := factor(variable, level =category_levels)]
+mob_smooth[, variable := factor(variable, level = category_levels)]
 
 mob_smooth[, label_cap := date == max(date), by = c("variable")]
 
