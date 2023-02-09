@@ -46,11 +46,11 @@ reg_data_wide[, lad19cd := NULL]
 setcolorder(reg_data_wide, 
             c("propWFH21", 
               "Residential", 
-              "Workplaces (Inverse)", 
-              "Retail and Recreation (Inverse)", 
-              "Grocery and Pharmacy (Inverse)", 
-              "Transit Stations (Inverse)", 
-              "Parks (Inverse)"))
+              "Workplaces", 
+              "Retail and Recreation", 
+              "Grocery and Pharmacy", 
+              "Transit Stations", 
+              "Parks"))
 
 cor_matrix <- data.frame(cor(as.matrix(reg_data_wide), use="complete.obs"))
 

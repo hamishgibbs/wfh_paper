@@ -25,8 +25,8 @@ smooth_mobility <- function(x, K=7){
 
 goog_mob_smooth <- smooth_mobility(goog_mob)
 
-p_names <- c('lower_80', 'upper_80', 'lower_50', 'upper_50', 'lower_20', 'upper_20', 'median')
-p <- c(0.01, 0.9, 0.25, 0.75, 0.6, 0.7, 0.5)
+p_names <- c('lower_90', 'upper_90', 'lower_50', 'upper_50', 'lower_20', 'upper_20')
+p <- c(0.05, 0.95, 0.25, 0.75, 0.6, 0.7)
 
 p_funs <- map(p, ~partial(quantile, probs = .x, na.rm = TRUE))
 p_funs <- set_names(p_funs, nm = p_names)
@@ -49,15 +49,14 @@ goog_mob_density <- data.table(goog_mob_density)
 
 goog_mob_density[, variable := factor(variable, levels = category_levels)]
 
-ALPHA = 0.2
+ALPHA = 0.3
 
 p <- goog_mob_density %>% 
   ggplot() + 
   geom_vline(aes(xintercept=as.Date("2021-03-21")), color="red", linetype="dashed") + 
-  geom_ribbon(aes(x = date, ymin = lower_80, ymax = upper_80, fill = variable), alpha = ALPHA) + 
+  geom_ribbon(aes(x = date, ymin = lower_90, ymax = upper_90, fill = variable), alpha = ALPHA) + 
   geom_ribbon(aes(x = date, ymin = lower_50, ymax = upper_50, fill = variable), alpha = ALPHA) + 
   geom_ribbon(aes(x = date, ymin = lower_20, ymax = upper_20, fill = variable), alpha = ALPHA) + 
-  geom_path(aes(x = date, y = median, color = variable)) + 
   theme_classic() + 
   facet_wrap(~variable, scales="free_y", ncol=2) + 
   theme(legend.position = "none") + 
