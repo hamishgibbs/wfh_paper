@@ -8,6 +8,6 @@ R scripts for conducting this analysis are located in the `src` directory.
 
 The data dependencies and dependency relationships between scripts are defined in the `Snakefile`.
 
-### Workflow
+### Workflow diagram
 
 ![](./rulegraph.svg)
