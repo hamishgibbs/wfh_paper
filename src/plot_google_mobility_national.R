@@ -9,6 +9,7 @@ suppressPackageStartupMessages({
 
 if (interactive()) {
   .args <- c(
+    "src/utils.R",
     "data/mobility/clean/google_mobility_national.csv",
     "data/interventions/key_interventions.csv",
     "output/mobility_overview_national.png"
@@ -17,8 +18,9 @@ if (interactive()) {
   .args <- commandArgs(trailingOnly = T)
 }
 
-goog_mob <- fread(.args[1])
-interventions <- fread(.args[2])
+source(.args[1])
+goog_mob <- fread(.args[2])
+interventions <- fread(.args[3])
 
 smooth_mobility <- function(x, K=30){
   x %>% 
@@ -28,22 +30,13 @@ smooth_mobility <- function(x, K=30){
 
 goog_mob_smooth <- smooth_mobility(goog_mob)
 
-category_levels <- c(
-  "Residential (Google)", 
-  "Workplaces (Google)", 
-  "Retail and Recreation (Google)", 
-  "Grocery and Pharmacy (Google)", 
-  "Transit Stations (Google)", 
-  "Parks (Google)"
-)
-
 mob_smooth <- data.table(goog_mob_smooth)
 
-mob_smooth[, variable := factor(variable, level = category_levels)]
+mob_smooth[, variable := factor(variable, level = names(google_settings_pal))]
 
 mob_smooth[, label_cap := date == max(date), by = c("variable")]
 
-LABEL_NUDGE_X <- 40
+LABEL_NUDGE_X <- 30
 
 label_coords <- mob_smooth[mob_smooth$label_cap]
 label_coords[, label := variable]
@@ -55,14 +48,12 @@ census_date <- data.frame(date = as.Date("2021-03-21"), value = NA, label="Censu
 
 census_date$value <- max(subset(mob_smooth, date == census_date$date)$value)
 
-pal <- c('#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#606060','#a65628','#f781bf','#999999')
-
 p <- ggplot(data = mob_smooth) + 
   geom_rect(data = interventions, aes(xmin = date, xmax = date_end, ymin = -Inf, ymax=Inf),
             alpha = 0.2) + 
   geom_hline(yintercept = 0, color="black", linetype="dashed", size=0.2) + 
   geom_path(aes(x = date, y = value/100, color=variable), alpha=0.85) + 
-  scale_color_manual(values = pal) + 
+  scale_color_manual(values = google_settings_pal) + 
   geom_label_repel(data=label_coords, 
                    aes(label=label, x = date, y = value/100, color=variable),
                    xlim = c(max(mob_smooth$date) + LABEL_NUDGE_X, NA),
@@ -82,13 +73,13 @@ p <- ggplot(data = mob_smooth) +
                    segment.linetype = 4) + 
   theme_classic() + 
   theme(legend.position = "none") + 
-  scale_x_date(limits = c(min(mob_smooth$date), max(mob_smooth$date)+LABEL_NUDGE_X*10)) + 
+  scale_x_date(limits = c(min(mob_smooth$date), max(mob_smooth$date)+LABEL_NUDGE_X*8)) + 
   scale_y_continuous(labels = scales::percent, limits = c(-1, 1.1)) + 
   labs(x = NULL, y = "Percentage Change from Baseline")
 
 ggsave(tail(.args, 1), 
        p, 
-       width=9, 
+       width=9.5, 
        height = 6, 
        units = "in")
 

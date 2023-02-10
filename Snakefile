@@ -44,6 +44,7 @@ rule clean_google_lad:
 rule plot_mobility_lad:
     input:
         "src/plot_google_mobility_lad.R",
+        "src/utils.R",
         "data/mobility/clean/google_mobility_lad.csv"
     output:
         "output/mobility_overview_lad.png"
@@ -52,7 +53,8 @@ rule plot_mobility_lad:
 
 rule plot_mobility_national:
     input:
-        "src/plot_mobility_overview.R",
+        "src/plot_google_mobility_national.R",
+        "src/utils.R",
         "data/mobility/clean/google_mobility_national.csv",
         "data/interventions/key_interventions.csv"
     output:
@@ -75,6 +77,7 @@ rule prep_regression_data:
 rule regression: 
   input: 
       "src/regression.R",
+      "src/utils.R",
       "data/regression/regression_data.csv"
   output:
       "output/cor_plot.png",

@@ -25,6 +25,5 @@ google <- melt(google, id.vars = c("date"),
 google[, variable := gsub("_percent_change_from_baseline", "", variable)]
 google[, variable := stringr::str_to_title(gsub("_", " ", variable))]
 google[, variable := gsub("And", "and", variable)]
-google[, variable := paste0(variable, " (Google)")]
 
 fwrite(google, tail(.args, 1))

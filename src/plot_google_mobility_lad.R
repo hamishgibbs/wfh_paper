@@ -8,6 +8,7 @@ suppressPackageStartupMessages({
 
 if (interactive()) {
   .args <- c(
+    "src/utils.R",
     "data/mobility/clean/google_mobility_lad.csv",
     "output/mobility_overview_lad.png"
   )
@@ -15,7 +16,8 @@ if (interactive()) {
   .args <- commandArgs(trailingOnly = T)
 }
 
-goog_mob <- fread(.args[1])
+source(.args[1])
+goog_mob <- fread(.args[2])
 
 smooth_mobility <- function(x, K=7){
   x %>% 
@@ -36,18 +38,9 @@ goog_mob_density <- goog_mob_smooth %>%
   summarize_at(vars(value), p_funs) %>% 
   ungroup()
 
-category_levels <- c(
-  "Residential", 
-  "Workplaces", 
-  "Retail and Recreation", 
-  "Grocery and Pharmacy", 
-  "Transit Stations", 
-  "Parks"
-)
-
 goog_mob_density <- data.table(goog_mob_density)
 
-goog_mob_density[, variable := factor(variable, levels = category_levels)]
+goog_mob_density[, variable := factor(variable, levels = names(google_settings_pal))]
 
 ALPHA = 0.3
 
@@ -58,6 +51,7 @@ p <- goog_mob_density %>%
   geom_ribbon(aes(x = date, ymin = lower_50, ymax = upper_50, fill = variable), alpha = ALPHA) + 
   geom_ribbon(aes(x = date, ymin = lower_20, ymax = upper_20, fill = variable), alpha = ALPHA) + 
   theme_classic() + 
+  scale_fill_manual(values = google_settings_pal) + 
   facet_wrap(~variable, scales="free_y", ncol=2) + 
   theme(legend.position = "none") + 
   labs(x = NULL, y = "% change from baseline")

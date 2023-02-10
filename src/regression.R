@@ -7,6 +7,7 @@ suppressPackageStartupMessages({
 
 if (interactive()) {
   .args <- c(
+    "src/utils.R",
     "data/regression/regression_data.csv",
     "output/cor_plot.png",
     "output/cor_matrix.csv",
@@ -22,7 +23,8 @@ if (interactive()) {
 rstan_options(auto_write = TRUE)
 options(mc.cores = parallel::detectCores())
 
-reg_data <- fread(.args[1])
+source(.args[1])
+reg_data <- fread(.args[2])
 .outputs <- tail(.args, 6)
 
 p <- ggplot(data=reg_data) + 
@@ -150,6 +152,7 @@ p <- ggplot(data = estimates_all_settings_long,
        aes(x = value, y = variable, fill=variable)) +
   geom_vline(xintercept=0, linetype="dashed", size=0.2) + 
   tidybayes::stat_eye(scale = 1.8) + 
+  scale_fill_manual(values = google_settings_pal) + 
   facet_wrap(~parameter, scales="free_x") + 
   theme_classic() + 
   theme(legend.position = "none") +
