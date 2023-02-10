@@ -9,8 +9,7 @@ rule all:
         f"metadata/dag/dag_{TIMESTAMP}.dot",
         "output/mobility_overview_national.png",
         "output/mobility_overview_lad.png",
-        "output/model_fit_summary.csv",
-        "data/forward_projection/forward_projection_google_mobility_lad.csv"
+        "output/regression_forward_projection.png"
 
 rule rulegraph:
     output: "metadata/rulegraph/rulegraph_{TIMESTAMP}.dot"
@@ -101,11 +100,11 @@ rule prep_regression_forward_projection:
 rule regression_forward_projection: 
   input: 
       "src/forward_projection.R",
-      "data/mobility/clean/google_mobility_lad.csv",
-      "data/regression/models.rds"
+      "data/forward_projection/forward_projection_google_mobility_lad.csv",
+      "data/regression/models.rds",
+      "data/geo/Local_Authority_Districts_December_2021_UK_BUC.geojson",
   output:
-      "output/google_mobility_focus_lads.png",
-      "output/regression_forward_projection_focus_lads.png"
+      "output/regression_forward_projection.png"
   shell:
       "Rscript {input} {output}"
 

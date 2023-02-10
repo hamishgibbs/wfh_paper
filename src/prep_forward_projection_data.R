@@ -18,7 +18,7 @@ if (interactive()) {
 
 google <- fread(.args[1])
 comparison_dates <- c(as.Date("2020-03-22"), as.Date("2021-03-21"), as.Date("2022-03-20"))
-forward_projection_dates <- c(as.Date("2021-06-20"), as.Date("2021-09-19"), as.Date("2021-12-19"), as.Date("2022-03-20"))
+forward_projection_dates <- c(as.Date("2021-06-20"), as.Date("2021-09-19"), as.Date("2021-12-19"))
 .outputs <- tail(.args, 2)
 
 google[, weekday := !lubridate::wday(date) %in% c(7, 1)]
@@ -38,6 +38,6 @@ comparison_data[, weekday := NULL]
 
 fwrite(comparison_data, .outputs[1])
 
-forward_projection_data <- subset(google, date %in% (comparison_dates - 2))
+forward_projection_data <- subset(google, date %in% (forward_projection_dates - 2))
 
 fwrite(forward_projection_data, .outputs[2])
