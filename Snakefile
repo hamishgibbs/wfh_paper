@@ -6,6 +6,7 @@ rule all:
         "rulegraph.svg",
         "output/mobility_overview_national.png",
         "output/mobility_overview_lad.png",
+        "output/coefficient_values.png",
         "output/regression_forward_projection.png"
 
 rule current_rulegraph: 
