@@ -1,25 +1,20 @@
 import time
 import glob
 
-TIMESTAMP = int(time.time())
-
 rule all:
     input: 
-        f"metadata/rulegraph/rulegraph_{TIMESTAMP}.dot",
-        f"metadata/dag/dag_{TIMESTAMP}.dot",
+        "rulegraph.svg",
         "output/mobility_overview_national.png",
         "output/mobility_overview_lad.png",
         "output/regression_forward_projection.png"
 
-rule rulegraph:
-    output: "metadata/rulegraph/rulegraph_{TIMESTAMP}.dot"
-    shell:
-        "snakemake --rulegraph > {output}"
-
-rule dag:
-    output: "metadata/dag/dag_{TIMESTAMP}.dot"
-    shell:
-        "snakemake --dag > {output}"
+rule current_rulegraph: 
+  input: 
+      "Snakefile"
+  output:
+      "rulegraph.svg"
+  shell:
+      "snakemake --rulegraph | dot -Tsvg > {output}"
 
 rule clean_google_national: 
     input:
