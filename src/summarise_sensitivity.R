@@ -27,7 +27,7 @@ comparison_table <- do.call(rbind,
                format_comparison_table))
 
 comparison_table_wide <- dcast(comparison_table, Setting ~ n_weeks, 
-                               value.var = c("Estimate", "l-95% CI", "u-95% CI"))
+                               value.var = c("Estimate"))
 
 
 fwrite(comparison_table_wide, tail(.args, 1))
