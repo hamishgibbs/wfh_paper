@@ -1,13 +1,15 @@
 import time
 import glob
 
+SENSITIVITY_WEEKS = [1, 3, 4, 5]
+
 rule all:
     input: 
         "rulegraph.svg",
         "output/mobility_overview_national.png",
         "output/mobility_overview_lad.png",
-        "output/coefficient_values.png",
-        "output/regression_forward_projection.png"
+        "output/regression_forward_projection.png",
+        "output/sensitivity_summary.csv"
 
 rule current_rulegraph: 
   input: 
@@ -65,23 +67,22 @@ rule prep_regression_data:
       "data/census/Census-WFH.csv",
       "data/geo/lad19_to_lad_21_lookup.csv"
   output:
-      "data/regression/regression_data.csv"
+      "data/regression/sensitivity/regression_data_{n}_week.csv"
   shell:
       "Rscript {input} {output}"
-      
       
 rule regression: 
   input: 
       "src/regression.R",
       "src/utils.R",
-      "data/regression/regression_data.csv"
+      "data/regression/sensitivity/regression_data_{n}_week.csv"
   output:
-      "output/cor_plot.png",
-      "output/cor_matrix.csv",
-      "output/regression_predictions.png",
-      "output/coefficient_values.png",
-      "data/regression/models.rds",
-      "output/model_fit_summary.csv"
+      "output/sensitivity/cor_plot_{n}_week.png",
+      "output/sensitivity/cor_matrix_{n}_week.csv",
+      "output/sensitivity/regression_predictions_{n}_week.png",
+      "output/sensitivity/coefficient_values_{n}_week.png",
+      "data/regression/senstivity/models_{n}_week.rds",
+      "output/sensitivity/model_fit_summary_{n}_week.csv"
   shell:
       "Rscript {input} {output}"
 
@@ -89,7 +90,7 @@ rule prep_regression_forward_projection:
     input: 
       "src/prep_forward_projection_data.R",
       "data/mobility/clean/google_mobility_lad.csv",
-      "data/regression/models.rds"
+      "data/regression/senstivity/models_4_week.rds"
     output:
       "output/mobility_census_date_comparison.csv",
       "data/forward_projection/forward_projection_google_mobility_lad.csv"
@@ -100,10 +101,19 @@ rule regression_forward_projection:
   input: 
       "src/forward_projection.R",
       "data/forward_projection/forward_projection_google_mobility_lad.csv",
-      "data/regression/models.rds",
+      "data/regression/senstivity/models_4_week.rds",
       "data/geo/Local_Authority_Districts_December_2021_UK_BUC.geojson",
   output:
       "output/regression_forward_projection.png"
   shell:
       "Rscript {input} {output}"
 
+rule summarise_sensitivity: 
+  input: 
+      "src/summarise_sensitivity.R",
+      expand("output/sensitivity/model_fit_summary_{n}_week.csv", n=SENSITIVITY_WEEKS)
+  output:
+      "output/sensitivity_summary.csv"
+  shell:
+      "Rscript {input} {output}"
+    
