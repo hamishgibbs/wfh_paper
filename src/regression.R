@@ -97,6 +97,7 @@ for (i in 1:length(unique(reg_data$variable))){
               chains = 8,
               iter = 5000,
               warmup = 2000,
+              seed=100,
               prior = prior)
   
   estimates <- tidybayes::spread_draws(res$fit, 
