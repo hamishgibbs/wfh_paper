@@ -6,6 +6,7 @@ suppressPackageStartupMessages({
 
 if (interactive()) {
   .args <- c(
+    "src/utils.R",
     "data/forward_projection/forward_projection_google_mobility_lad.csv",
     "data/regression/models.rds",
     "data/geo/Local_Authority_Districts_December_2021_UK_BUC.geojson",
@@ -15,9 +16,10 @@ if (interactive()) {
   .args <- commandArgs(trailingOnly = T)
 }
 
-google <- fread(.args[1])
-models <- readr::read_rds(.args[2])
-lad21 <- st_read(.args[3], quiet = T)
+source(.args[1])
+google <- fread(.args[2])
+models <- readr::read_rds(.args[3])
+lad21 <- st_read(.args[4], quiet = T)
 census_date <- as.Date("2021-03-21")
 
 google[, x := value]
@@ -74,6 +76,10 @@ p <- ggplot() +
   theme_void() + 
   ggutils::geo_lims(forward_predictions_mean_geom) + 
   theme(legend.position = "bottom")
+
+data_source_annotation <- paste0("Data: ", data_sources["ONS"], " & ", data_sources["google"])
+
+p <- add_data_source_annotation(p, data_source_annotation)
 
 ggsave(tail(.args, 1),
        p,

@@ -33,6 +33,10 @@ p <- ggplot(data=reg_data) +
   theme_classic() + 
   labs(x = "Google Mobility", y = "Proportion working from home (Census)")
 
+data_source_annotation <- paste0("Data: ", data_sources["ONS"], " & ", data_sources["google"])
+
+p <- add_data_source_annotation(p, data_source_annotation)
+
 ggsave(.outputs[1],
        p,
        width=10,
@@ -135,6 +139,10 @@ p <- predictions_all_settings %>%
   facet_wrap(~variable, scales = "free") + 
   theme_classic() + 
   labs(x = "Google Mobility", y = "Proportion working from home (Census)", fill = "Credible\ninterval")
+
+data_source_annotation <- paste0("Data: ", data_sources["ONS"], " & ", data_sources["google"])
+
+p <- add_data_source_annotation(p, data_source_annotation)
 
 ggsave(.outputs[3],
        p,

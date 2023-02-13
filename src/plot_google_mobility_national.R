@@ -75,7 +75,11 @@ p <- ggplot(data = mob_smooth) +
   theme(legend.position = "none") + 
   scale_x_date(limits = c(min(mob_smooth$date), max(mob_smooth$date)+LABEL_NUDGE_X*8)) + 
   scale_y_continuous(labels = scales::percent, limits = c(-1, 1.1)) + 
-  labs(x = NULL, y = "Percentage Change from Baseline")
+  labs(x = "", y = "Percentage Change from Baseline")
+
+data_source_annotation <- paste0("Data: ", data_sources["google"])
+
+p <- add_data_source_annotation(p, data_source_annotation)
 
 ggsave(tail(.args, 1), 
        p, 
