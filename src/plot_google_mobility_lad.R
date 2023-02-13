@@ -54,7 +54,11 @@ p <- goog_mob_density %>%
   scale_fill_manual(values = google_settings_pal) + 
   facet_wrap(~variable, scales="free_y", ncol=2) + 
   theme(legend.position = "none") + 
-  labs(x = NULL, y = "% change from baseline")
+  labs(x = "", y = "% change from baseline")
+
+data_source_annotation <- paste0("Data: ", data_sources["google"])
+
+p <- add_data_source_annotation(p, data_source_annotation)
 
 ggsave(tail(.args, 1), 
        p, 

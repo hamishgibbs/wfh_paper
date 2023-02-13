@@ -100,6 +100,7 @@ rule prep_regression_forward_projection:
 rule regression_forward_projection: 
   input: 
       "src/forward_projection.R",
+      "src/utils.R",
       "data/forward_projection/forward_projection_google_mobility_lad.csv",
       "data/regression/senstivity/models_4_week.rds",
       "data/geo/Local_Authority_Districts_December_2021_UK_BUC.geojson",
