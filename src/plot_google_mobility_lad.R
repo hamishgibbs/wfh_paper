@@ -11,7 +11,8 @@ if (interactive()) {
     "src/utils.R",
     "data/mobility/clean/google_mobility_lad.csv",
     "output/mobility_overview_lad.png",
-    "output/residential_mobility_dist_key_dates.csv"
+    "output/residential_mobility_dist_key_dates.csv",
+    "output/head_tail_residential_mobility_census_date.csv"
   )
 } else {
   .args <- commandArgs(trailingOnly = T)
@@ -68,9 +69,6 @@ ggsave(.outputs[1],
        height = 10, 
        units = "in")
 
-
-subset(goog_mob_density, variable == "Residential" & median == max(median, na.rm=T))
-
 key_dates <- list(
   list(
     title="First Lockdown",
@@ -109,3 +107,20 @@ workplace_distribution <- lapply(key_dates,
 key_date_distributions <- do.call(rbind, c(residential_distribution, workplace_distribution))
 
 fwrite(key_date_distributions, .outputs[2])
+
+goog_mob_census_date_subset <- subset(goog_mob, 
+                                     date == key_dates[[2]]$date & variable == "Residential")
+
+
+format_top_change_table <- function(top_table){
+  top_table <- top_table[, c("la_name", "value")]
+  top_table[, value := scales::percent(value/100)]
+  
+  return(top_table)
+}
+
+top_bottom_change_table <- cbind(format_top_change_table(goog_mob_census_date_subset[order(value)][1:5, ]),
+      format_top_change_table(goog_mob_census_date_subset[order(-value)][1:5, ]))
+
+fwrite(key_date_distributions, .outputs[3])
+
