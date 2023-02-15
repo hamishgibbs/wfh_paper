@@ -7,7 +7,7 @@ rule all:
     input: 
         "rulegraph.svg",
         "output/mobility_overview_national.png",
-        "output/mobility_overview_lad.png",
+        "output/head_tail_residential_mobility_census_date.csv",
         "output/regression_forward_projection.png",
         "output/sensitivity_summary.csv"
 
@@ -45,7 +45,9 @@ rule plot_mobility_lad:
         "src/utils.R",
         "data/mobility/clean/google_mobility_lad.csv"
     output:
-        "output/mobility_overview_lad.png"
+        "output/mobility_overview_lad.png",
+        "output/residential_mobility_dist_key_dates.csv",
+        "output/head_tail_residential_mobility_census_date.csv"
     shell:
         "Rscript {input} {output}"
 

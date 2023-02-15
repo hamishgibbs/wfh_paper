@@ -10,7 +10,9 @@ if (interactive()) {
   .args <- c(
     "src/utils.R",
     "data/mobility/clean/google_mobility_lad.csv",
-    "output/mobility_overview_lad.png"
+    "output/mobility_overview_lad.png",
+    "output/residential_mobility_dist_key_dates.csv",
+    "output/head_tail_residential_mobility_census_date.csv"
   )
 } else {
   .args <- commandArgs(trailingOnly = T)
@@ -18,6 +20,7 @@ if (interactive()) {
 
 source(.args[1])
 goog_mob <- fread(.args[2])
+.outputs <- tail(.args, 3)
 
 smooth_mobility <- function(x, K=7){
   x %>% 
@@ -27,8 +30,8 @@ smooth_mobility <- function(x, K=7){
 
 goog_mob_smooth <- smooth_mobility(goog_mob)
 
-p_names <- c('lower_90', 'upper_90', 'lower_50', 'upper_50', 'lower_20', 'upper_20')
-p <- c(0.05, 0.95, 0.25, 0.75, 0.6, 0.7)
+p_names <- c('lower_90', 'upper_90', 'lower_50', 'upper_50', 'lower_20', 'upper_20', 'median')
+p <- c(0.05, 0.95, 0.25, 0.75, 0.6, 0.7, 0.5)
 
 p_funs <- map(p, ~partial(quantile, probs = .x, na.rm = TRUE))
 p_funs <- set_names(p_funs, nm = p_names)
@@ -60,9 +63,66 @@ data_source_annotation <- paste0("Data: ", data_sources["google"])
 
 p <- add_data_source_annotation(p, data_source_annotation)
 
-ggsave(tail(.args, 1), 
+ggsave(.outputs[1], 
        p, 
        width=11, 
        height = 10, 
        units = "in")
+
+key_dates <- list(
+  list(
+    title="First Lockdown",
+    date=as.Date("2020-04-10")), 
+  list(title="Census Date",
+       date=as.Date("2021-03-21")))
+
+calc_mobility_distribution_table <- function(key_date, google, setting="Residential"){
+  
+  google_subset <- subset(google, date == key_date$date & variable == setting)
+  
+  return(
+    data.frame(
+      date_title = key_date$title,
+      date = key_date$date,
+      setting = setting,
+      min = min(google_subset$value, na.rm=T),
+      max = max(google_subset$value, na.rm=T),
+      mean = mean(google_subset$value, na.rm=T),
+      median = median(google_subset$value, na.rm=T),
+      quartile_lower = quantile(google_subset$value, 0.25, na.rm=T),
+      quartile_upper = quantile(google_subset$value, 0.75, na.rm=T)
+    )
+  )
+  
+}
+
+residential_distribution <- lapply(key_dates, 
+               calc_mobility_distribution_table, 
+               google=goog_mob, 
+               setting="Residential")
+
+workplace_distribution <- lapply(key_dates, 
+                                 calc_mobility_distribution_table, 
+                                 google=goog_mob, 
+                                 setting="Workplaces")
+
+key_date_distributions <- do.call(rbind, c(residential_distribution, workplace_distribution))
+
+fwrite(key_date_distributions, .outputs[2])
+
+goog_mob_census_date_subset <- subset(goog_mob, 
+                                     date == key_dates[[2]]$date & variable == "Residential")
+
+
+format_top_change_table <- function(top_table){
+  top_table <- top_table[, c("la_name", "value")]
+  top_table[, value := scales::percent(value/100)]
+  
+  return(top_table)
+}
+
+top_bottom_change_table <- cbind(format_top_change_table(goog_mob_census_date_subset[order(value)][1:5, ]),
+      format_top_change_table(goog_mob_census_date_subset[order(-value)][1:5, ]))
+
+fwrite(top_bottom_change_table, .outputs[3])
 
