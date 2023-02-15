@@ -20,7 +20,7 @@ if (interactive()) {
 
 source(.args[1])
 goog_mob <- fread(.args[2])
-.outputs <- tail(.args, 2)
+.outputs <- tail(.args, 3)
 
 smooth_mobility <- function(x, K=7){
   x %>% 
@@ -85,6 +85,8 @@ calc_mobility_distribution_table <- function(key_date, google, setting="Resident
       date_title = key_date$title,
       date = key_date$date,
       setting = setting,
+      min = min(google_subset$value, na.rm=T),
+      max = max(google_subset$value, na.rm=T),
       mean = mean(google_subset$value, na.rm=T),
       median = median(google_subset$value, na.rm=T),
       quartile_lower = quantile(google_subset$value, 0.25, na.rm=T),
@@ -122,5 +124,5 @@ format_top_change_table <- function(top_table){
 top_bottom_change_table <- cbind(format_top_change_table(goog_mob_census_date_subset[order(value)][1:5, ]),
       format_top_change_table(goog_mob_census_date_subset[order(-value)][1:5, ]))
 
-fwrite(key_date_distributions, .outputs[3])
+fwrite(top_bottom_change_table, .outputs[3])
 
