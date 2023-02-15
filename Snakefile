@@ -8,6 +8,7 @@ rule all:
         "rulegraph.svg",
         "output/mobility_overview_national.png",
         "output/head_tail_residential_mobility_census_date.csv",
+        [f"output/sensitivity/model_fit_summary_{n}_week.csv" for n in SENSITIVITY_WEEKS],
         "output/regression_forward_projection.png",
         "output/sensitivity_summary.csv"
 
