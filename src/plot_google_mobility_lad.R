@@ -22,7 +22,7 @@ source(.args[1])
 goog_mob <- fread(.args[2])
 .outputs <- tail(.args, 3)
 
-smooth_mobility <- function(x, K=7){
+smooth_mobility <- function(x, K=14){
   x %>% 
     group_by(lad19cd, variable) %>% 
     mutate(value = rollmean(value, k=K, fill=NA, align='right'))
