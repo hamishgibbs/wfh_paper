@@ -96,7 +96,7 @@ for (i in 1:length(unique(reg_data$variable))){
              brms::set_prior("normal(0, 1)", class = "Intercept"),
              brms::set_prior("normal(0, 1)", class = "sigma"))
     
-  res <- brms::brm(y ~ x,
+  res <- brms::brm(y | trunc(lb=0,ub=100) ~ x,
               data = stan.data, 
               chains = 8,
               iter = 5000,
