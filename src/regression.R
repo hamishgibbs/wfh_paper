@@ -8,7 +8,7 @@ suppressPackageStartupMessages({
 if (interactive()) {
   .args <- c(
     "src/utils.R",
-    "data/regression/regression_data.csv",
+    "data/regression/sensitivity/regression_data_4_week.csv",
     "output/cor_plot.png",
     "output/cor_matrix.csv",
     "output/regression_predictions.png",
@@ -132,13 +132,18 @@ stan_cases_all_settings <- do.call(rbind, stan_cases_all_settings)
 
 p <- predictions_all_settings %>% 
   ggplot(aes(x = x, y=y)) +
-  ggdist::stat_lineribbon(aes(y = .prediction), .width = c(.99, .95, .8, .5), 
-                          color = "#08519C") +
+  ggdist::stat_lineribbon(aes(y = .prediction, 
+                              color=variable, 
+                              fill=variable), 
+                          .width = c(.99, .95, .8, .5), 
+                          alpha = 1/4) +
+  scale_color_manual(values = google_settings_pal) + 
+  scale_fill_manual(values = google_settings_pal) + 
   geom_point(data = stan_cases_all_settings, size = 0.5) +
-  scale_fill_brewer() + 
   facet_wrap(~variable, scales = "free") + 
   theme_classic() + 
-  labs(x = "Google Mobility", y = "Proportion working from home (Census)", fill = "Credible\ninterval")
+  labs(x = "Google Mobility", y = "Proportion working from home (Census)", fill = "Credible\ninterval") + 
+  theme(legend.position = "none")
 
 data_source_annotation <- paste0("Data: ", data_sources["ONS"], " & ", data_sources["google"])
 

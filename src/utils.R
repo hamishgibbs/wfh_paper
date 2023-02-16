@@ -1,10 +1,10 @@
 google_settings_pal <- c(
-  "Retail and Recreation"='#e41a1c', 
-  "Grocery and Pharmacy"='#377eb8', 
-  "Parks"='#4daf4a', 
-  "Transit Stations"='#984ea3', 
-  "Workplaces"='#ff7f00', 
-  "Residential"='#f781bf'
+  "Retail and Recreation"=rgb(181, 137, 0, maxColorValue = 255), 
+  "Grocery and Pharmacy"=rgb(203, 75, 22, maxColorValue = 255), 
+  "Parks"=rgb(211, 54, 130, maxColorValue = 255), 
+  "Transit Stations"=rgb(108, 113, 196, maxColorValue = 255), 
+  "Workplaces"=rgb(42, 161, 152, maxColorValue = 255), 
+  "Residential"=rgb(133, 153, 0, maxColorValue = 255)
 )
 
 data_sources <- list(
