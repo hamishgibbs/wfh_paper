@@ -8,7 +8,7 @@ if (interactive()) {
   .args <- c(
     "src/utils.R",
     "data/forward_projection/forward_projection_google_mobility_lad.csv",
-    "data/regression/models.rds",
+    "data/regression/senstivity/models_4_week.rds",
     "data/geo/Local_Authority_Districts_December_2021_UK_BUC.geojson",
     "output/regression_forward_projection.png"
   )
@@ -45,10 +45,12 @@ forward_predictions_mean[, period := factor(period,
                                             levels = sort(unique(period)), 
                                             labels = paste0("+", sort(unique(period)), " months"))]
 
-forward_predictions_mean <- ggutils::classify_intervals(forward_predictions_mean, "mean_value", c(-Inf, 0, 25, 75, 100, Inf))
-forward_predictions_mean[, value := gsub("\\(-Inf to 0\\]", "<0", value)]
-forward_predictions_mean[, value := gsub("\\(100 to Inf\\]", "100+", value)]
-forward_predictions_mean[, value := factor(value, levels = c("<0", "(0 to 25]", "(25 to 75]", "(75 to 100]", "100+"))]
+forward_predictions_mean <- ggutils::classify_intervals(forward_predictions_mean, 
+                                                        "mean_value", c(0, 15, 25, 75, 100))
+forward_predictions_mean[, value := factor(value, levels = c("(0 to 15]", "(15 to 25]", "(25 to 75]", "(75 to 100]"))]
+
+# The City of London has no residential mobility
+forward_predictions_mean <- subset(forward_predictions_mean, !is.na(value))
 
 forward_predictions_mean_geom <- dplyr::left_join(
   forward_predictions_mean,

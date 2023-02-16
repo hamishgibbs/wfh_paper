@@ -27,7 +27,7 @@ google <- subset(google, weekday)
 smooth_mobility <- function(x, K=20){
   x %>% 
     group_by(lad19cd, variable) %>% 
-    mutate(value = rollmean(value, k=K, fill=NA, align='right'))
+    mutate(value = rollmean(value, k=K, fill=NA, align='right', na.rm=T))
 }
 
 google <- smooth_mobility(google)
