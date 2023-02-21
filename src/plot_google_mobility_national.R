@@ -83,7 +83,7 @@ p <- add_data_source_annotation(p, data_source_annotation, size=9)
 
 p <- p + theme(
   plot.margin = unit(c(0, 0, 0.25, 0), "cm"),
-  plot.background = element_rect(fill = "white")
+  plot.background = element_rect(fill = "white", color = NA),
   )
 
 ggsave(tail(.args, 1), 
