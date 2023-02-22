@@ -46,8 +46,9 @@ forward_predictions_mean[, period := factor(period,
                                             labels = paste0("+", sort(unique(period)), " months"))]
 
 forward_predictions_mean <- ggutils::classify_intervals(forward_predictions_mean, 
-                                                        "mean_value", c(0, 15, 25, 75, 100))
-forward_predictions_mean[, value := factor(value, levels = c("(0 to 15]", "(15 to 25]", "(25 to 75]", "(75 to 100]"))]
+                                                        "mean_value", c(0, 1, 5, 10, 25, 50, 75, 100))
+forward_predictions_mean[, value := gsub("[.]0", "", value)]
+forward_predictions_mean[, value := factor(value, levels = c("(0 to 1]", "(1 to 5]", "(5 to 10]", "(10 to 25]", "(25 to 50]", "(50 to 75]", "(75 to 100]"))]
 
 # The City of London has no residential mobility
 forward_predictions_mean <- subset(forward_predictions_mean, !is.na(value))
@@ -60,8 +61,12 @@ forward_predictions_mean_geom <- dplyr::left_join(
 merge_conflict_districts <- subset(lad21, substr(LAD21CD, 1, 1) == "E")
 merge_conflict_districts <- subset(merge_conflict_districts, LAD21CD %in% setdiff(merge_conflict_districts$LAD21CD, forward_predictions_mean_geom$lad19cd))
 
+uk_basemap <- ggutils::basemap("United Kingdom")
+
+uk_basemap <- subset(uk_basemap, region != "Northern Ireland")
+
 p <- ggplot() + 
-  ggutils::plot_basemap("United Kingdom", country_size = 0, world_fill = "#EFEFEF") + 
+  geom_sf(data = uk_basemap, color = "#EFEFEF", size=0.1, fill = "#EFEFEF") + 
   geom_sf(data = forward_predictions_mean_geom, 
           aes(fill = value), size=0.1, color="black") + 
   colorspace::scale_fill_discrete_sequential("Mint",
