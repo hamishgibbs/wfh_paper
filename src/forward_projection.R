@@ -46,8 +46,9 @@ forward_predictions_mean[, period := factor(period,
                                             labels = paste0("+", sort(unique(period)), " months"))]
 
 forward_predictions_mean <- ggutils::classify_intervals(forward_predictions_mean, 
-                                                        "mean_value", c(0, 15, 25, 75, 100))
-forward_predictions_mean[, value := factor(value, levels = c("(0 to 15]", "(15 to 25]", "(25 to 75]", "(75 to 100]"))]
+                                                        "mean_value", c(0, 1, 5, 10, 25, 50, 75, 100))
+forward_predictions_mean[, value := gsub("[.]0", "", value)]
+forward_predictions_mean[, value := factor(value, levels = c("(0 to 1]", "(1 to 5]", "(5 to 10]", "(10 to 25]", "(25 to 50]", "(50 to 75]", "(75 to 100]"))]
 
 # The City of London has no residential mobility
 forward_predictions_mean <- subset(forward_predictions_mean, !is.na(value))
