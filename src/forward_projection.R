@@ -61,8 +61,12 @@ forward_predictions_mean_geom <- dplyr::left_join(
 merge_conflict_districts <- subset(lad21, substr(LAD21CD, 1, 1) == "E")
 merge_conflict_districts <- subset(merge_conflict_districts, LAD21CD %in% setdiff(merge_conflict_districts$LAD21CD, forward_predictions_mean_geom$lad19cd))
 
+uk_basemap <- ggutils::basemap("United Kingdom")
+
+uk_basemap <- subset(uk_basemap, region != "Northern Ireland")
+
 p <- ggplot() + 
-  ggutils::plot_basemap("United Kingdom", country_size = 0, world_fill = "#EFEFEF") + 
+  geom_sf(data = uk_basemap, color = "#EFEFEF", size=0.1, fill = "#EFEFEF") + 
   geom_sf(data = forward_predictions_mean_geom, 
           aes(fill = value), size=0.1, color="black") + 
   colorspace::scale_fill_discrete_sequential("Mint",
